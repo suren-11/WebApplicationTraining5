@@ -7,6 +7,7 @@ namespace WebApplicationTraining5.DB
     public class MongoDb
     {
         private readonly IMongoCollection<Item> _items;
+        private readonly IMongoCollection<Order> _orders;
         private readonly IMongoDatabase _database;
 
         public MongoDb(IConfiguration config)
@@ -14,6 +15,7 @@ namespace WebApplicationTraining5.DB
             var client = new MongoClient(config.GetConnectionString("Dbconnection"));
             _database = client.GetDatabase("WebApiTraining5");
             _items = _database.GetCollection<Item>("Items");
+            _orders = _database.GetCollection<Order>("Orders");
         }
 
         public async Task<List<Item>> GetItems()
@@ -46,6 +48,27 @@ namespace WebApplicationTraining5.DB
                 .Set(i=>i.Price, item.Price)
                 .Set(i=>i.Updated, item.Updated);
             return await _items.UpdateOneAsync(filter,update);
+        }
+
+        public async Task<List<Order>> GetOrders()
+        {
+            return await _orders.Find(_ => true).ToListAsync();
+        }
+
+        public async Task<bool> SaveOrder(Order order)
+        {
+            List<Order> orders = GetOrders().Result;
+            if (orders.Count > 0 && orders != null)
+            {
+                Order order1 = orders.Last();
+                order.Id = order1.Id + 1;
+            }
+            else
+            {
+                order.Id = 1;
+            }
+            await _orders.InsertOneAsync(order);
+            return true;
         }
     }
 }
