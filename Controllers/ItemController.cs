@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 using WebApplicationTraining5.DB;
 using WebApplicationTraining5.Entities;
 
@@ -26,12 +27,31 @@ namespace WebApplicationTraining5.Controllers
         [HttpPost]
         public async Task<IActionResult> SaveItem(Item item)
         {
+            item.Created = DateTime.UtcNow;
+            item.Updated = DateTime.UtcNow;
+
             bool success = await _mongoDb.SaveItem(item);
             if (success)
             {
                 return Ok(item);
             }
             return BadRequest("Item not saved");
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateItem(Item item)
+        {
+            item.Updated = DateTime.UtcNow;
+
+            UpdateResult success = await _mongoDb.UpdateItem(item);
+            if (success != null)
+            {
+                return Ok(item);
+            }
+            else
+            {
+                return BadRequest("Not updated");
+            }
         }
     }
 }
