@@ -29,14 +29,22 @@ namespace WebApplicationTraining5.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SaveEmployee([FromBody] Employee employee)
+        public async Task<IActionResult> SaveEmployee([FromBody]Employee employee)
         {
+            if (employee == null) 
+            {
+                return BadRequest("employee is null");
+            }
             bool success = await _sqlDb.SaveEmployee(employee);
             if (success) 
             {
                 return Ok(new { message = "Employee saved successfully", employee = employee.Name });
             }
+            else
+            {
+
             return BadRequest("Employee Not Saved Successfully");
+            }
         }
         
         [HttpPut]
