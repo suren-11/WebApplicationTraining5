@@ -1,5 +1,6 @@
 ﻿using System.Data.SqlClient;
 using WebApplicationTraining5.Entities;
+using WebApplicationTraining5.Enums;
 
 namespace WebApplicationTraining5.DB
 {
@@ -27,7 +28,7 @@ namespace WebApplicationTraining5.DB
                         employee.Name = reader.GetString(2);
                         employee.Email = reader.GetString(3);
                         employee.DateOfBirth = reader.GetDateTime(4);
-                        employee.Gender = reader.GetString(5);
+                        employee.Gender = Enum.Parse<GenderEnum>(reader.GetString(5), true);
                         employee.created = reader.GetDateTime(6);
                         employee.updated = reader.GetDateTime(7);
 
@@ -54,8 +55,8 @@ namespace WebApplicationTraining5.DB
                     sqlCommand.Parameters.AddWithValue("@Email", employee.Email);
                     sqlCommand.Parameters.AddWithValue("@DateOfBirth", employee.DateOfBirth);
                     sqlCommand.Parameters.AddWithValue("@Gender", employee.Gender);
-                    sqlCommand.Parameters.AddWithValue("@CreatedDate", DateTime.UtcNow);
-                    sqlCommand.Parameters.AddWithValue("@LastUpdatedDate", DateTime.UtcNow);
+                    sqlCommand.Parameters.AddWithValue("@CreatedDate", employee.created);
+                    sqlCommand.Parameters.AddWithValue("@LastUpdatedDate", employee.updated);
 
                     int record = await sqlCommand.ExecuteNonQueryAsync();
                     return record > 0;
@@ -78,7 +79,7 @@ namespace WebApplicationTraining5.DB
                     sqlCommand.Parameters.AddWithValue("@Email", employee.Email);
                     sqlCommand.Parameters.AddWithValue("@DateOfBirth", employee.DateOfBirth);
                     sqlCommand.Parameters.AddWithValue("@Gender", employee.Gender);
-                    sqlCommand.Parameters.AddWithValue("@LastUpdatedDate", DateTime.UtcNow);
+                    sqlCommand.Parameters.AddWithValue("@LastUpdatedDate", employee.updated);
                     sqlCommand.Parameters.AddWithValue("@Id", employee.Id);
 
                     int record = await sqlCommand.ExecuteNonQueryAsync();
